@@ -25,7 +25,28 @@ extension BookSearchViewModel: UITableViewDataSource {
             return UITableViewCell()
         }
         
+        if let thumbnailUrl = searchResult.value[indexPath.row].thumbnail {
+            if let url = URL(string: thumbnailUrl) {
+                URLSession.shared.dataTask(with: url) { data, response, error -> Void in
+                    if let error = error {
+                        print("Failed fetching image:", error)
+                        return
+                    }
+                    
+                    guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+                        print("Not a proper HTTPURLResponse or statusCode")
+                        return
+                    }
+
+                    DispatchQueue.main.async { cell.bookCoverImg.image = UIImage(data: data!) }
+                }.resume()
+            }
+        }
+        
         cell.bookTitle.text = searchResult.value[indexPath.row].title
+        cell.bookAuthor.text = searchResult.value[indexPath.row].authors?.reduce("") { (result, s) -> String in
+            return result.isEmpty ? s : "\(result), \(s)"
+        }
         
         return cell
     }
