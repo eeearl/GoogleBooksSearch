@@ -6,48 +6,25 @@
 //  Copyright © 2019 eeearl. All rights reserved.
 //
 
-import UIKit
 import RxSwift
+import RxCocoa
 
-class BookSearchViewModel: NSObject {
+class BookSearchViewModel {
     
-    let searchResult = Variable<[BooksItem]>([])
-}
-
-extension BookSearchViewModel: UITableViewDataSource {
+    let searchResult = BehaviorRelay<[BooksItem]>(value: [])
+    let query = BehaviorRelay<String>(value: "")
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return searchResult.value.count
+    private var reqStartIndex = 0
+    private var resultCount = 20
+    
+    init() {
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: BookSearchCell.identifier) as? BookSearchCell else {
-            return UITableViewCell()
+    func requestBookSearch(_ text: String, resetIndex: Bool?) {
+        if let _ = resetIndex { reqStartIndex = 0 }
+        GoogleBooksAPI().request(searchText: text, startIndex: reqStartIndex, resultCount: resultCount) { books in
+            self.searchResult.accept(books)
+            self.reqStartIndex = self.searchResult.value.count
         }
-        
-        if let thumbnailUrl = searchResult.value[indexPath.row].thumbnail {
-            if let url = URL(string: thumbnailUrl) {
-                URLSession.shared.dataTask(with: url) { data, response, error -> Void in
-                    if let error = error {
-                        print("Failed fetching image:", error)
-                        return
-                    }
-                    
-                    guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-                        print("Not a proper HTTPURLResponse or statusCode")
-                        return
-                    }
-
-                    DispatchQueue.main.async { cell.bookCoverImg.image = UIImage(data: data!) }
-                }.resume()
-            }
-        }
-        
-        cell.bookTitle.text = searchResult.value[indexPath.row].title
-        cell.bookAuthor.text = searchResult.value[indexPath.row].authors?.reduce("") { (result, s) -> String in
-            return result.isEmpty ? s : "\(result), \(s)"
-        }
-        
-        return cell
     }
 }

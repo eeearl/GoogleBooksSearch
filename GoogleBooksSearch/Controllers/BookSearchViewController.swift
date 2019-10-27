@@ -7,17 +7,16 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+import Kingfisher
 
 class BookSearchViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     
     let viewModel = BookSearchViewModel()
-    lazy var searchController: SearchResultsTableController = {
-       return SearchResultsTableController()
-    }()
-
-    var searchedTexts = ["Data1","Data2","Data3"]
+    let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,39 +34,49 @@ class BookSearchViewController: UIViewController {
     
     func initSearchbar() {
         let searchResultsController = SearchResultsTableController()
-        let search = UISearchController(searchResultsController: searchResultsController)
-        search.searchResultsUpdater = self
-        search.searchBar.delegate = self
-        self.navigationItem.searchController = search
-
+        let searchController = UISearchController(searchResultsController: searchResultsController)
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
+        self.navigationItem.searchController = searchController
+        searchResultsController.searchResultCallback = self
+        
+        
         if #available(iOS 11.0, *) {
             navigationItem.hidesSearchBarWhenScrolling = false
         }
     }
     
     func bindViews() {
-        tableView.dataSource = viewModel
+        viewModel.searchResult
+            .bind(to: tableView.rx.items(cellIdentifier: BookSearchCell.identifier, cellType: BookSearchCell.self)) { tableView, item, cell in
+                
+                if let thumbnailUrl = item.thumbnail, let url = URL(string: thumbnailUrl) {
+                    cell.bookCoverImg.kf.setImage(with: url)
+                }
+                
+                cell.bookTitle.text = item.title
+                cell.bookAuthor.text = item.authors?.reduce("") { (result, s) -> String in
+                    return result.isEmpty ? s : "\(result), \(s)"
+                }
+                cell.bookPages.text = "\(item.pageCount)p"
+                
+            }
+            .disposed(by: disposeBag)
+            
+        
     }
 }
 
 extension BookSearchViewController: UISearchBarDelegate, UISearchResultsUpdating {
+    
     // MARK: UISearchResultsUpdating
     // Update the filtered array based on the search text.
     func updateSearchResults(for searchController: UISearchController) {
-        let filteredResults = searchedTexts.filter({ company in
-            guard let searchingTxt = searchController.searchBar.text?.lowercased() else {
-                return false
-            }
-            return company.lowercased().contains(searchingTxt)
-        })
-
-        // Hand over the filtered results to our search results table.
         guard let resultsController = searchController.searchResultsController as? SearchResultsTableController else {
             return
         }
         
-        resultsController.viewModel.searchResult.value = filteredResults
-        resultsController.tableView.reloadData()
+        resultsController.viewModel.searchText.accept(searchController.searchBar.text)
     }
     
     // MARK: UISearchBarDelegate
@@ -75,9 +84,22 @@ extension BookSearchViewController: UISearchBarDelegate, UISearchResultsUpdating
         guard let text = searchBar.text else { return }
         self.navigationItem.searchController?.dismiss(animated: true, completion: nil)
         
-        GoogleBooksAPI().request(searchText: text, startIndex: 0, resultCount: 3) { books in
-            self.viewModel.searchResult.value = books
-            self.tableView.reloadData()
+        do {
+            try SearchWord.insertSearchedWord(word: text)
+        } catch {
+            
         }
+        
+        viewModel.requestBookSearch(text, resetIndex: true)
+    }
+}
+
+extension BookSearchViewController: SearchResultCallback {
+    func clickedSearchResultItem(selectedItemModel: String) {
+        if let searchController = self.navigationItem.searchController {
+            searchController.searchBar.text = selectedItemModel
+        }
+        
+        viewModel.requestBookSearch(selectedItemModel, resetIndex: true)
     }
 }

@@ -7,9 +7,10 @@
 //
 
 import RxSwift
+import RxCocoa
 
 class SearchResultsTableViewModel {
     
-    let searchResult = Variable<[String]>([])
-    
+    let searchResult = BehaviorRelay<[String]>(value: [])
+    let searchText = BehaviorRelay<String?>(value: "")
 }

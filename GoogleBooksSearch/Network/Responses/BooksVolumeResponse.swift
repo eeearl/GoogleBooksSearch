@@ -8,6 +8,7 @@
 
 import Foundation
 
+ // MARK: - BooksVolumeResponse
 struct BooksVolumeResponse: Codable {
     let kind: String
     let totalItems: Int64
@@ -40,8 +41,10 @@ struct BooksVolumeResponse: Codable {
     }
 }
 
+// MARK: - BooksItem
 struct BooksItem: Codable {
     let title: String
+    let pageCount: Int
     let authors: [String]?
     let thumbnail: String?
 
@@ -51,6 +54,7 @@ struct BooksItem: Codable {
         case authors = "authors"
         case imageLinks = "imageLinks"
         case thumbnail = "thumbnail"
+        case pageCount = "pageCount"
     }
     
     init(from decoder: Decoder) throws {
@@ -58,11 +62,8 @@ struct BooksItem: Codable {
         let response = try container.nestedContainer(keyedBy: CodingKeys.self, forKey: .volumeInfo)
         title = try response.decode(String.self, forKey: .title)
         
-        if response.contains(.authors) {
-            authors = try response.decode([String]?.self, forKey: .authors)
-        } else {
-            authors = nil
-        }
+        pageCount = response.contains(.pageCount) ? try response.decode(Int.self, forKey: .pageCount) : 0
+        authors = response.contains(.authors) ? try response.decode([String]?.self, forKey: .authors) : nil
         
         let imageLinks = try response.nestedContainer(keyedBy: CodingKeys.self, forKey: .imageLinks)
         thumbnail = try imageLinks.decode(String.self, forKey: .thumbnail)
@@ -73,6 +74,7 @@ struct BooksItem: Codable {
         var response = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .volumeInfo)
         try response.encode(title, forKey: .title)
         try response.encode(authors, forKey: .authors)
+        try response.encode(pageCount, forKey: .pageCount)
         var imageLinks = response.nestedContainer(keyedBy: CodingKeys.self, forKey: .imageLinks)
         try imageLinks.encode(thumbnail, forKey: .thumbnail)
         

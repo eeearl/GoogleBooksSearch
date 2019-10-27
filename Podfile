@@ -10,10 +10,12 @@ target 'GoogleBooksSearch' do
 
   # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
 
-  pod 'RxSwift',    '~> 4.0'
-  pod 'RxCocoa',    '~> 4.0'
-  pod 'RxDataSources', '~> 3.0'
+  pod 'RxCocoa',    '~> 5'
+  pod 'RxSwift',    '~> 5'
+  pod 'RxDataSources', '~> 4.0'
   pod 'RxAlamofire'
+  pod 'Kingfisher', '~> 5.0'
+  pod 'GRDB.swift'
 
   target 'GoogleBooksSearchTests' do
     inherit! :search_paths
