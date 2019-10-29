@@ -11,6 +11,7 @@ import RxCocoa
 
 class BookSearchViewModel {
     
+    let disposeBag = DisposeBag()
     let searchResult = BehaviorRelay<[BookDisplayable]>(value: [])
     let query = BehaviorRelay<String>(value: "")
     
@@ -22,9 +23,13 @@ class BookSearchViewModel {
     
     func requestBookSearch(_ text: String, resetIndex: Bool?) {
         if let _ = resetIndex { reqStartIndex = 0 }
-        GoogleBooksAPI().request(searchText: text, startIndex: reqStartIndex, resultCount: resultCount) { books in
-            self.searchResult.accept(books)
-            self.reqStartIndex = self.searchResult.value.count
-        }
+        
+        GoogleBooksAPI()
+            .request(searchText: text, startIndex: reqStartIndex, resultCount: resultCount)
+            .subscribe(onNext: { books in
+                self.searchResult.accept(books)
+                self.reqStartIndex = self.searchResult.value.count
+            })
+            .disposed(by: disposeBag)
     }
 }

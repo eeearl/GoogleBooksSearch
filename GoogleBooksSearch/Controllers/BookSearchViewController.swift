@@ -51,7 +51,7 @@ class BookSearchViewController: UIViewController {
                 cell.bookCoverImg.kf.setImage(with: item.thumbnailURL)
                 cell.bookTitle.text = item.title
                 cell.bookAuthor.text = item.authorsName
-                cell.bookPages.text = "\(item.pageCount)p"
+                cell.bookPages.text = "\(item.pages ?? 0)p"
             }
             .disposed(by: disposeBag)
     }

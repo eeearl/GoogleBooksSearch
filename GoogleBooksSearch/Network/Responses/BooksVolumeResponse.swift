@@ -22,7 +22,7 @@ struct SearchResult: Decodable {
 // MARK: - BookDisplayable Type
 protocol BookDisplayable {
     var title: String? { get }
-    var pageCount: Int { get }
+    var pages: Int? { get }
     var authorsName: String { get }
     var thumbnailURL: URL? { get }
 }
@@ -30,16 +30,22 @@ protocol BookDisplayable {
 // MARK: - BooksItem
 struct BooksItem: Decodable {
     let title: String?
-    let pageCount: Int = -1
+    let pageCount: Int?
     let authors: [String]?
     let imageLinks: Image?
 }
 
 extension BooksItem: BookDisplayable {
+    var pages: Int? {
+        guard let pageCount = pageCount else { return 0 }
+        return pageCount
+    }
+    
     var authorsName: String {
         guard let authors = authors else { return "Unknown Author" }
         return authors.joined(separator: ", ")
     }
+    
     var thumbnailURL: URL? { imageLinks?.thumbnail }
 }
 

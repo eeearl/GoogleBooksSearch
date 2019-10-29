@@ -7,24 +7,23 @@
 //
 
 import Foundation
+import Alamofire
 import RxSwift
 import RxAlamofire
-import Alamofire
 
 struct GoogleBooksAPI {
-    func request(searchText: String, startIndex: Int, resultCount: Int, callback: @escaping ([BookDisplayable]) -> Void ) {
-        Alamofire.request(GoogleBooksAPIRouter.volumes(searchText, startIndex, resultCount))
-            .validate { req, res, data in
-                return .success
-            }
-            .responseJSON { response in
-                guard let data = response.data else { return }
+    func request(searchText: String, startIndex: Int, resultCount: Int) -> Observable<[BookDisplayable]> {
+        return RxAlamofire
+            .requestJSON(GoogleBooksAPIRouter.volumes(searchText, startIndex, resultCount))
+            .flatMap { (response, resData) -> Observable<[BookDisplayable]> in
+                guard let dic = resData as? [String: Any], let data = try? JSONSerialization.data(withJSONObject: dic, options: .prettyPrinted) else { return .never() }
+                
                 let decoder = JSONDecoder()
                 do {
                     let booksVolumeResponse: BooksVolumeResponse = try decoder.decode(BooksVolumeResponse.self, from: data)
-                    callback(booksVolumeResponse.items?.map { $0.volumeInfo } ?? [])
+                    return .just(booksVolumeResponse.items?.map { $0.volumeInfo } ?? [])
                 } catch {
-                    print(error)
+                    return .error(error)
                 }
             }
     }

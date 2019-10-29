@@ -103,9 +103,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <navigationItem key="navigationItem" id="aql-8g-Sac">
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="8dB-l7-Kqr"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="aql-8g-Sac"/>
                     <connections>
                         <outlet property="tableView" destination="phz-AT-FKW" id="FtJ-k2-zhk"/>
                     </connections>

@@ -31,7 +31,7 @@ class SearchResultsTableController: UITableViewController {
     func bindViews() {
 
         viewModel.searchText
-            .throttle(.milliseconds(800), scheduler: MainScheduler.instance)
+            .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
             .distinctUntilChanged()
             .flatMapLatest { query -> Observable<[String]> in
                 return self.searchHistory(query).catchErrorJustReturn([])
