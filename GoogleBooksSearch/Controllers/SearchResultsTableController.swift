@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-protocol SearchResultCallback {
+protocol SearchResultDelegate: class {
     func clickedSearchResultItem(selectedItemModel: String)
 }
 
@@ -20,7 +20,7 @@ class SearchResultsTableController: UITableViewController {
     let viewModel = SearchResultsTableViewModel()
     let disposeBag = DisposeBag()
     
-    var searchResultCallback: SearchResultCallback? = nil
+    weak var searchResultDelegate: SearchResultDelegate?
     
     override func viewDidLoad() {
        super.viewDidLoad()
@@ -33,11 +33,11 @@ class SearchResultsTableController: UITableViewController {
         viewModel.searchText
             .throttle(.milliseconds(800), scheduler: MainScheduler.instance)
             .distinctUntilChanged()
-            .flatMapLatest { query -> Observable<[SearchWord]> in
+            .flatMapLatest { query -> Observable<[String]> in
                 return self.searchHistory(query).catchErrorJustReturn([])
             }
             .observeOn(MainScheduler.instance)
-            .map { $0.map { $0.word } }
+            .map { $0 }
             .bind(to: viewModel.searchResult)
             .disposed(by: disposeBag)
         
@@ -52,14 +52,18 @@ class SearchResultsTableController: UITableViewController {
             .itemSelected
             .subscribe(onNext: { indexPath in
                 let word = self.viewModel.searchResult.value[indexPath.row]
-                self.searchResultCallback?.clickedSearchResultItem(selectedItemModel: word)
+                self.searchResultDelegate?.clickedSearchResultItem(selectedItemModel: word)
                 self.dismiss(animated: true, completion: nil)
             })
             .disposed(by: disposeBag)
     }
     
-    func searchHistory(_ query: String?) -> Observable<[SearchWord]> {
-        return Observable<[SearchWord]>.from(optional: SearchWord.orderedByWord(containWord: query))
+    func searchHistory(_ query: String?) -> Observable<[String]> {
+        let searchWord = query ?? ""
+        return Observable<[String]>
+            .from(optional:
+                searchWord.isEmpty ? Storage.readHistories().word : Storage.readHistories().word.filter { $0.contains(searchWord) }
+            )
     }
 }
 

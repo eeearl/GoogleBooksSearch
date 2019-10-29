@@ -8,75 +8,42 @@
 
 import Foundation
 
- // MARK: - BooksVolumeResponse
-struct BooksVolumeResponse: Codable {
+// MARK: - BooksVolumeResponse
+struct BooksVolumeResponse: Decodable {
     let kind: String
     let totalItems: Int64
-    let items: [BooksItem]?
+    let items: [SearchResult]?
+}
 
-    enum CodingKeys: String, CodingKey {
-        case kind = "kind"
-        case totalItems = "totalItems"
-        case items = "items"
-    }
-    
-    // Encoding
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(kind, forKey: .kind)
-        try container.encode(totalItems, forKey: .totalItems)
-        try container.encode(items, forKey: .items)
-    }
-    
-     // Decoding
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        kind = try container.decode(String.self, forKey: .kind)
-        totalItems = try container.decode(Int64.self, forKey: .totalItems)
-        if container.contains(.items) {
-            items = try container.decode([BooksItem].self, forKey: .items)
-        } else {
-            items = nil
-        }
-    }
+struct SearchResult: Decodable {
+    let volumeInfo: BooksItem
+}
+
+// MARK: - BookDisplayable Type
+protocol BookDisplayable {
+    var title: String? { get }
+    var pageCount: Int { get }
+    var authorsName: String { get }
+    var thumbnailURL: URL? { get }
 }
 
 // MARK: - BooksItem
-struct BooksItem: Codable {
-    let title: String
-    let pageCount: Int
+struct BooksItem: Decodable {
+    let title: String?
+    let pageCount: Int = -1
     let authors: [String]?
-    let thumbnail: String?
+    let imageLinks: Image?
+}
 
-    enum CodingKeys: String, CodingKey {
-        case volumeInfo = "volumeInfo"
-        case title = "title"
-        case authors = "authors"
-        case imageLinks = "imageLinks"
-        case thumbnail = "thumbnail"
-        case pageCount = "pageCount"
+extension BooksItem: BookDisplayable {
+    var authorsName: String {
+        guard let authors = authors else { return "Unknown Author" }
+        return authors.joined(separator: ", ")
     }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let response = try container.nestedContainer(keyedBy: CodingKeys.self, forKey: .volumeInfo)
-        title = try response.decode(String.self, forKey: .title)
-        
-        pageCount = response.contains(.pageCount) ? try response.decode(Int.self, forKey: .pageCount) : 0
-        authors = response.contains(.authors) ? try response.decode([String]?.self, forKey: .authors) : nil
-        
-        let imageLinks = try response.nestedContainer(keyedBy: CodingKeys.self, forKey: .imageLinks)
-        thumbnail = try imageLinks.decode(String.self, forKey: .thumbnail)
-    }
-    
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        var response = container.nestedContainer(keyedBy: CodingKeys.self, forKey: .volumeInfo)
-        try response.encode(title, forKey: .title)
-        try response.encode(authors, forKey: .authors)
-        try response.encode(pageCount, forKey: .pageCount)
-        var imageLinks = response.nestedContainer(keyedBy: CodingKeys.self, forKey: .imageLinks)
-        try imageLinks.encode(thumbnail, forKey: .thumbnail)
-        
-    }
+    var thumbnailURL: URL? { imageLinks?.thumbnail }
+}
+
+struct Image: Decodable {
+    let smallThumbnail: URL
+    let thumbnail: URL
 }

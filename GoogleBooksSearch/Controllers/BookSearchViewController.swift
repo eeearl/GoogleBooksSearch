@@ -23,13 +23,17 @@ class BookSearchViewController: UIViewController {
         
         initNavigationbar()
         initSearchbar()
+        
+    }
+    override func viewDidAppear(_ animated: Bool) {
         bindViews()
     }
     
     func initNavigationbar() {
-        self.title = "Search"
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-        self.navigationController?.navigationItem.largeTitleDisplayMode = .never
+        title = "Search"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationItem.largeTitleDisplayMode = .never
+        navigationItem.hidesSearchBarWhenScrolling = false
     }
     
     func initSearchbar() {
@@ -37,33 +41,19 @@ class BookSearchViewController: UIViewController {
         let searchController = UISearchController(searchResultsController: searchResultsController)
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
-        self.navigationItem.searchController = searchController
-        searchResultsController.searchResultCallback = self
-        
-        
-        if #available(iOS 11.0, *) {
-            navigationItem.hidesSearchBarWhenScrolling = false
-        }
+        searchResultsController.searchResultDelegate = self
+        navigationItem.searchController = searchController
     }
     
     func bindViews() {
         viewModel.searchResult
             .bind(to: tableView.rx.items(cellIdentifier: BookSearchCell.identifier, cellType: BookSearchCell.self)) { tableView, item, cell in
-                
-                if let thumbnailUrl = item.thumbnail, let url = URL(string: thumbnailUrl) {
-                    cell.bookCoverImg.kf.setImage(with: url)
-                }
-                
+                cell.bookCoverImg.kf.setImage(with: item.thumbnailURL)
                 cell.bookTitle.text = item.title
-                cell.bookAuthor.text = item.authors?.reduce("") { (result, s) -> String in
-                    return result.isEmpty ? s : "\(result), \(s)"
-                }
+                cell.bookAuthor.text = item.authorsName
                 cell.bookPages.text = "\(item.pageCount)p"
-                
             }
             .disposed(by: disposeBag)
-            
-        
     }
 }
 
@@ -82,10 +72,10 @@ extension BookSearchViewController: UISearchBarDelegate, UISearchResultsUpdating
     // MARK: UISearchBarDelegate
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let text = searchBar.text else { return }
-        self.navigationItem.searchController?.dismiss(animated: true, completion: nil)
+        navigationItem.searchController?.dismiss(animated: true, completion: nil)
         
         do {
-            try SearchWord.insertSearchedWord(word: text)
+            try Storage.writeHistory(searchWord: text)
         } catch {
             
         }
@@ -94,9 +84,9 @@ extension BookSearchViewController: UISearchBarDelegate, UISearchResultsUpdating
     }
 }
 
-extension BookSearchViewController: SearchResultCallback {
+extension BookSearchViewController: SearchResultDelegate {
     func clickedSearchResultItem(selectedItemModel: String) {
-        if let searchController = self.navigationItem.searchController {
+        if let searchController = navigationItem.searchController {
             searchController.searchBar.text = selectedItemModel
         }
         

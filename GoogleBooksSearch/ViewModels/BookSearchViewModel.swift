@@ -11,7 +11,7 @@ import RxCocoa
 
 class BookSearchViewModel {
     
-    let searchResult = BehaviorRelay<[BooksItem]>(value: [])
+    let searchResult = BehaviorRelay<[BookDisplayable]>(value: [])
     let query = BehaviorRelay<String>(value: "")
     
     private var reqStartIndex = 0

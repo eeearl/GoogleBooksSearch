@@ -86,8 +86,8 @@
                                                 </activityIndicatorView>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="VTY-u0-ULf" firstAttribute="centerY" secondItem="jy1-fF-y3F" secondAttribute="centerY" id="4k2-mD-hna"/>
-                                                <constraint firstItem="VTY-u0-ULf" firstAttribute="centerX" secondItem="jy1-fF-y3F" secondAttribute="centerX" id="x1X-pR-hsx"/>
+                                                <constraint firstItem="VTY-u0-ULf" firstAttribute="centerX" secondItem="jy1-fF-y3F" secondAttribute="centerX" id="IuR-jn-Bh1"/>
+                                                <constraint firstItem="VTY-u0-ULf" firstAttribute="centerY" secondItem="jy1-fF-y3F" secondAttribute="centerY" id="cTG-Se-1C4"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -103,7 +103,9 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <navigationItem key="navigationItem" id="aql-8g-Sac"/>
+                    <navigationItem key="navigationItem" id="aql-8g-Sac">
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="8dB-l7-Kqr"/>
+                    </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="phz-AT-FKW" id="FtJ-k2-zhk"/>
                     </connections>
