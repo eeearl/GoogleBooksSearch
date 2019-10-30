@@ -8,7 +8,7 @@
 
 import UIKit
 
-extension UIView {
+extension UITableViewCell {
     static var identifier: String {
         return String(describing: self)
     }

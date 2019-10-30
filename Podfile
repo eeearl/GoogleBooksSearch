@@ -15,7 +15,6 @@ target 'GoogleBooksSearch' do
   pod 'RxDataSources', '~> 4.0'
   pod 'RxAlamofire'
   pod 'Kingfisher', '~> 5.0'
-  pod 'GRDB.swift'
 
   target 'GoogleBooksSearchTests' do
     inherit! :search_paths
