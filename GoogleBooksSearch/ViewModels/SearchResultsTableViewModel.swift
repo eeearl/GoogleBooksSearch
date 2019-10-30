@@ -13,4 +13,29 @@ class SearchResultsTableViewModel {
     
     let searchResult = BehaviorRelay<[String]>(value: [])
     let searchText = BehaviorRelay<String?>(value: "")
+    
+    var searchTextObserver: Observable<[String]>!
+    var searchResultObserver: Observable<[String]>!
+    
+    init() {
+        searchTextObserver = searchText
+            .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
+            .distinctUntilChanged()
+            .flatMapLatest { query -> Observable<[String]> in
+                return self.searchHistory(query).catchErrorJustReturn([])
+            }
+            .observeOn(MainScheduler.instance)
+            .map { $0 }
+        
+        searchResultObserver = searchResult
+            .distinctUntilChanged()
+    }
+    
+    func searchHistory(_ query: String?) -> Observable<[String]> {
+        let searchWord = query ?? ""
+        return Observable<[String]>
+            .from(optional:
+                searchWord.isEmpty ? Storage.readHistories().word : Storage.readHistories().word.filter { $0.contains(searchWord) }
+            )
+    }
 }

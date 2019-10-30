@@ -30,19 +30,11 @@ class SearchResultsTableController: UITableViewController {
     
     func bindViews() {
 
-        viewModel.searchText
-            .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
-            .distinctUntilChanged()
-            .flatMapLatest { query -> Observable<[String]> in
-                return self.searchHistory(query).catchErrorJustReturn([])
-            }
-            .observeOn(MainScheduler.instance)
-            .map { $0 }
+        viewModel.searchTextObserver
             .bind(to: viewModel.searchResult)
             .disposed(by: disposeBag)
         
-        viewModel.searchResult
-            .distinctUntilChanged()
+        viewModel.searchResultObserver
             .bind(onNext: {_ in
                 self.tableView.reloadData()
             })
@@ -56,14 +48,6 @@ class SearchResultsTableController: UITableViewController {
                 self.dismiss(animated: true, completion: nil)
             })
             .disposed(by: disposeBag)
-    }
-    
-    func searchHistory(_ query: String?) -> Observable<[String]> {
-        let searchWord = query ?? ""
-        return Observable<[String]>
-            .from(optional:
-                searchWord.isEmpty ? Storage.readHistories().word : Storage.readHistories().word.filter { $0.contains(searchWord) }
-            )
     }
 }
 

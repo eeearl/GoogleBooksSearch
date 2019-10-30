@@ -16,16 +16,22 @@ class BookSearchViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     let viewModel = BookSearchViewModel()
-    let disposeBag = DisposeBag()
+    var disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         initNavigationbar()
         initSearchbar()
-        
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        disposeBag = DisposeBag()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         bindViews()
     }
     

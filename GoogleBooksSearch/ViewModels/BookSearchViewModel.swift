@@ -18,18 +18,15 @@ class BookSearchViewModel {
     private var reqStartIndex = 0
     private var resultCount = 20
     
-    init() {
-    }
+    init() {}
     
     func requestBookSearch(_ text: String, resetIndex: Bool?) {
         if let _ = resetIndex { reqStartIndex = 0 }
-        
-        GoogleBooksAPI()
-            .request(searchText: text, startIndex: reqStartIndex, resultCount: resultCount)
-            .subscribe(onNext: { books in
-                self.searchResult.accept(books)
-                self.reqStartIndex = self.searchResult.value.count
-            })
-            .disposed(by: disposeBag)
+        let _ = GoogleBooksAPI()
+                .request(searchText: text, startIndex: reqStartIndex, resultCount: resultCount)
+                .subscribe(onNext: { books in
+                    self.searchResult.accept(books)
+                    self.reqStartIndex = self.searchResult.value.count
+                })
     }
 }
