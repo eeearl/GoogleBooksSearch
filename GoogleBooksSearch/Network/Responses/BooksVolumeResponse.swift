@@ -19,6 +19,21 @@ struct SearchResult: Decodable {
     let volumeInfo: BooksItem
 }
 
+// MARK: - BookResponse Type
+protocol BookVolumeResponseType {
+    var kind: String { get }
+    var totalItems: Int64 { get }
+    var items: [BookDisplayable] { get }
+}
+
+struct BookVolume {
+    var kind: String
+    var totalItems: Int64
+    var items: [BookDisplayable]
+}
+
+extension BookVolume: BookVolumeResponseType {}
+
 // MARK: - BookDisplayable Type
 protocol BookDisplayable {
     var title: String? { get }

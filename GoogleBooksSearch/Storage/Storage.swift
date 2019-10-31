@@ -22,6 +22,10 @@ class Storage {
             .appendingPathComponent(historyFilePath)
         
         var histories = readHistories()
+        if histories.word.contains(searchWord) {
+            return
+        }
+        
         histories.word.append(searchWord)
         
         let data = try encoder.encode(histories)

@@ -22,6 +22,7 @@
 		D8595635235E111D00710723 /* BookSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8595634235E111D00710723 /* BookSearchViewModel.swift */; };
 		D8595637235E131900710723 /* BookSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8595636235E131900710723 /* BookSearchCell.swift */; };
 		D8595639235E181900710723 /* GoogleBooksAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8595638235E181900710723 /* GoogleBooksAPI.swift */; };
+		D89AE3CC236B331500EADB4B /* RxExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = D89AE3CB236B331500EADB4B /* RxExt.swift */; };
 		D8C56B17235ECAFD002B2CF3 /* SearchResultsTableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8C56B16235ECAFD002B2CF3 /* SearchResultsTableController.swift */; };
 		D8C56B1B235EE574002B2CF3 /* SearchResultsTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8C56B1A235EE574002B2CF3 /* SearchResultsTableViewModel.swift */; };
 		D8C56B1F235F16F2002B2CF3 /* BooksVolumeResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8C56B1E235F16F2002B2CF3 /* BooksVolumeResponse.swift */; };
@@ -71,6 +72,7 @@
 		D8595634235E111D00710723 /* BookSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSearchViewModel.swift; sourceTree = "<group>"; };
 		D8595636235E131900710723 /* BookSearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookSearchCell.swift; sourceTree = "<group>"; };
 		D8595638235E181900710723 /* GoogleBooksAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleBooksAPI.swift; sourceTree = "<group>"; };
+		D89AE3CB236B331500EADB4B /* RxExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RxExt.swift; sourceTree = "<group>"; };
 		D8C56B16235ECAFD002B2CF3 /* SearchResultsTableController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsTableController.swift; sourceTree = "<group>"; };
 		D8C56B1A235EE574002B2CF3 /* SearchResultsTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsTableViewModel.swift; sourceTree = "<group>"; };
 		D8C56B1E235F16F2002B2CF3 /* BooksVolumeResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooksVolumeResponse.swift; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				D80AD333235E83B40077141F /* UIViewExt.swift */,
+				D89AE3CB236B331500EADB4B /* RxExt.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -504,6 +507,7 @@
 				D8595635235E111D00710723 /* BookSearchViewModel.swift in Sources */,
 				D8595600235E0C1E00710723 /* AppDelegate.swift in Sources */,
 				D8C56B1F235F16F2002B2CF3 /* BooksVolumeResponse.swift in Sources */,
+				D89AE3CC236B331500EADB4B /* RxExt.swift in Sources */,
 				D80AD334235E83B40077141F /* UIViewExt.swift in Sources */,
 				D8C56B17235ECAFD002B2CF3 /* SearchResultsTableController.swift in Sources */,
 				D8595602235E0C1E00710723 /* SceneDelegate.swift in Sources */,

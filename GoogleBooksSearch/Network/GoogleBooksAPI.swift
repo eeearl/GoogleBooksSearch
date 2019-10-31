@@ -12,16 +12,17 @@ import RxSwift
 import RxAlamofire
 
 struct GoogleBooksAPI {
-    func request(searchText: String, startIndex: Int, resultCount: Int) -> Observable<[BookDisplayable]> {
+    func request(searchText: String, startIndex: Int, resultCount: Int) -> Observable<BookVolume> {
         return RxAlamofire
             .requestJSON(GoogleBooksAPIRouter.volumes(searchText, startIndex, resultCount))
-            .flatMap { (response, resData) -> Observable<[BookDisplayable]> in
+            .flatMap { (response, resData) -> Observable<BookVolume> in
                 guard let dic = resData as? [String: Any], let data = try? JSONSerialization.data(withJSONObject: dic, options: .prettyPrinted) else { return .never() }
                 
                 let decoder = JSONDecoder()
                 do {
                     let booksVolumeResponse: BooksVolumeResponse = try decoder.decode(BooksVolumeResponse.self, from: data)
-                    return .just(booksVolumeResponse.items?.map { $0.volumeInfo } ?? [])
+                    let volume = BookVolume(kind: booksVolumeResponse.kind, totalItems: booksVolumeResponse.totalItems, items: booksVolumeResponse.items?.map { $0.volumeInfo } ?? [])
+                    return .just(volume)
                 } catch {
                     return .error(error)
                 }

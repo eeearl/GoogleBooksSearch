@@ -60,6 +60,10 @@ class BookSearchViewController: UIViewController {
                 cell.bookPages.text = "\(item.pages ?? 0)p"
             }
             .disposed(by: disposeBag)
+        
+        tableView.rx.reachedBottom.asObservable()
+            .bind(to: viewModel.reachedBottomTrigger)
+            .disposed(by: disposeBag)
     }
 }
 
